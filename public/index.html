@@ -1,0 +1,197 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#10131c">
+  <title>Advanced Image Studio</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="/">
+      <span class="brand-icon">✦</span>
+      <span>Advanced <b>Image Studio</b></span>
+    </a>
+    <div class="top-actions">
+      <span class="save-status" id="status">Ready to edit</span>
+      <button class="btn btn-primary" id="downloadBtn">↓ Export Image</button>
+    </div>
+  </header>
+
+  <main class="app-layout">
+    <aside class="sidebar">
+      <div class="side-heading">IMAGE WORKSPACE</div>
+
+      <label class="upload-card" for="fileInput">
+        <span class="upload-icon">＋</span>
+        <strong>Open an image</strong>
+        <small>JPG, PNG, WEBP, BMP</small>
+      </label>
+      <input type="file" id="fileInput"
+        accept="image/jpeg,image/png,image/webp,image/bmp,image/tiff" hidden>
+
+      <div class="section">
+        <h3>AI Tools</h3>
+        <button class="tool-button" id="removeBgBtn">
+          <span class="tool-icon purple">✧</span>
+          <span><b>Remove background</b><small>AI-powered cutout</small></span>
+        </button>
+        <p class="hint">AI processing needs internet access on first use.</p>
+      </div>
+
+      <div class="section">
+        <h3>Crop &amp; Resize</h3>
+        <button class="tool-button" id="cropBtn">
+          <span class="tool-icon blue">⌗</span>
+          <span><b>Interactive crop</b><small>Drag over the image</small></span>
+        </button>
+
+        <div class="button-row">
+          <button class="btn btn-small" id="applyCropBtn">Apply crop</button>
+          <button class="btn btn-small" id="cancelCropBtn">Cancel</button>
+        </div>
+
+        <div class="field-row">
+          <label>Width
+            <input type="number" id="widthInput" min="1" max="30000" value="1200">
+          </label>
+          <label>Height
+            <input type="number" id="heightInput" min="1" max="30000" value="800">
+          </label>
+        </div>
+
+        <label class="check-label">
+          <input type="checkbox" id="keepRatio" checked>
+          Keep aspect ratio
+        </label>
+        <button class="btn btn-primary full-width" id="resizeBtn">Apply resize</button>
+
+        <div class="preset-grid">
+          <button data-w="1280" data-h="720">HD</button>
+          <button data-w="1920" data-h="1080">Full HD</button>
+          <button data-w="1080" data-h="1080">Square</button>
+          <button data-w="413" data-h="531">Portrait</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3>Adjustments</h3>
+
+        <div class="slider-control">
+          <div><label for="brightness">Brightness</label><output id="brightnessValue">100%</output></div>
+          <input id="brightness" type="range" min="0" max="200" value="100">
+        </div>
+
+        <div class="slider-control">
+          <div><label for="contrast">Contrast</label><output id="contrastValue">100%</output></div>
+          <input id="contrast" type="range" min="0" max="200" value="100">
+        </div>
+
+        <div class="slider-control">
+          <div><label for="saturation">Saturation</label><output id="saturationValue">100%</output></div>
+          <input id="saturation" type="range" min="0" max="200" value="100">
+        </div>
+
+        <div class="slider-control">
+          <div><label for="sharpness">Sharpness</label><output id="sharpnessValue">0</output></div>
+          <input id="sharpness" type="range" min="0" max="5" step="0.1" value="0">
+        </div>
+
+        <button class="btn btn-primary full-width" id="applyAdjustmentsBtn">Apply adjustments</button>
+        <button class="btn btn-quiet full-width" id="resetAdjustmentsBtn">Reset sliders</button>
+      </div>
+
+      <div class="section">
+        <h3>Filters</h3>
+        <div class="filter-grid">
+          <button class="filter-option active" data-filter="none"><span>◈</span>Original</button>
+          <button class="filter-option" data-filter="grayscale"><span>◐</span>Mono</button>
+          <button class="filter-option" data-filter="sepia"><span>◒</span>Sepia</button>
+          <button class="filter-option" data-filter="vintage"><span>◉</span>Vintage</button>
+          <button class="filter-option" data-filter="blur"><span>◎</span>Soft blur</button>
+          <button class="filter-option" data-filter="invert"><span>◑</span>Invert</button>
+        </div>
+        <button class="btn btn-primary full-width" id="applyFilterBtn">Apply filter</button>
+      </div>
+
+      <div class="section">
+        <h3>Batch Tools</h3>
+        <button class="tool-button" id="batchResizeBtn">
+          <span class="tool-icon blue">▦</span>
+          <span><b>Batch resize</b><small>Process multiple images</small></span>
+        </button>
+        <button class="tool-button" id="batchConvertBtn">
+          <span class="tool-icon green">⇄</span>
+          <span><b>Batch convert</b><small>Export multiple formats</small></span>
+        </button>
+        <input type="file" id="batchInput" accept="image/*" multiple hidden>
+      </div>
+
+      <button class="btn btn-quiet full-width" id="resetAllBtn">↺ Reset all edits</button>
+    </aside>
+
+    <section class="editor">
+      <div class="editor-toolbar">
+        <div>
+          <div class="editor-title">Canvas</div>
+          <div class="image-details" id="imageDetails">No image selected</div>
+        </div>
+        <div class="toolbar-actions">
+          <button class="btn btn-small" id="beforeAfterBtn">Before / After</button>
+          <button class="btn btn-small" id="undoBtn">Undo</button>
+        </div>
+      </div>
+
+      <div class="canvas-area" id="canvasArea">
+        <div class="empty-state" id="emptyState">
+          <div class="empty-art">▧</div>
+          <h2>Your creative workspace</h2>
+          <p>Upload an image to begin editing.</p>
+          <label class="btn btn-primary" for="fileInput">Choose image</label>
+        </div>
+        <canvas id="canvas" hidden></canvas>
+        <div class="crop-tip" id="cropTip" hidden>Drag to select a crop area</div>
+      </div>
+
+      <div class="bottom-bar">
+        <span>LOCAL EDITING <i></i> YOUR IMAGES STAY IN YOUR BROWSER</span>
+        <span id="dimensions">— × — px</span>
+      </div>
+    </section>
+  </main>
+
+  <dialog id="exportDialog">
+    <form method="dialog" id="exportForm">
+      <div class="dialog-heading">
+        <h2>Export your image</h2>
+        <button class="close-dialog" value="cancel" aria-label="Close">×</button>
+      </div>
+      <p>Choose your preferred format and quality.</p>
+
+      <label class="dialog-label">File name
+        <input id="exportName" value="edited-image" maxlength="100">
+      </label>
+
+      <label class="dialog-label">Format
+        <select id="exportFormat">
+          <option value="image/png">PNG — transparent images</option>
+          <option value="image/jpeg">JPEG — photographs</option>
+          <option value="image/webp">WEBP — smaller files</option>
+        </select>
+      </label>
+
+      <label class="dialog-label" id="qualityLabel">Quality
+        <input id="exportQuality" type="range" min="40" max="100" value="92">
+      </label>
+
+      <button class="btn btn-primary full-width" id="confirmExportBtn" value="default">
+        Download image
+      </button>
+    </form>
+  </dialog>
+
+  <script type="module" src="/app.js"></script>
+</body>
+</html>
